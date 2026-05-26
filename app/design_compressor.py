@@ -16,5 +16,13 @@ setting = {
 }
 
 """Part II: Run"""
-from util._260520_get_dispersion import _get_dispersion
+from util._260520_get_dispersion import _get_dispersion, _print_dispersion
 dispersion = _get_dispersion(setting)
+_print_dispersion(dispersion)
+
+from util._260521_get_full_duration import _get_full_duration, _print_full_duration
+full_duration = _get_full_duration(
+    center_wavelength=setting['center_wavelength (nm)']*1E-9,
+    wavelength_fwhm=10*1E-9,
+    GVD=dispersion[3], TOD=dispersion[4], FOD=dispersion[5])
+_print_full_duration(full_duration)
