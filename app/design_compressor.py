@@ -11,7 +11,6 @@ setting = {
 'incident_angle (deg)': 62.77,
 'grating_separation (mm)': 1000,
 'author': 'Hua Lin',
-'date': '2026-5-20',
 
 }
 
@@ -26,3 +25,6 @@ full_duration = _get_full_duration(
     wavelength_fwhm=10*1E-9,
     GVD=dispersion[3], TOD=dispersion[4], FOD=dispersion[5])
 _print_full_duration(full_duration)
+
+from util._260522_latex_compressor_design import _latex_compressor_design
+_latex_compressor_design(setting, dispersion)

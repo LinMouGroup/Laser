@@ -1,5 +1,6 @@
 import numpy as np
 
+# 根据Kapteyn的公式计算加入啁啾后的脉宽
 def _get_full_duration(
     center_wavelength,
     wavelength_fwhm,
@@ -19,10 +20,10 @@ def _get_full_duration(
 
     return np.abs(t_max - t_min)
 
+# 打印加入啁啾后的脉宽，默认光谱宽度为10nm
 def _print_full_duration(full_duration):
     print("")
     print(f"Full_pulse_duration_with_10nm_FWHM: {full_duration:.2E} s")
-    print("")
 
 """
 Reference:
