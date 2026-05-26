@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from datetime import date, datetime
-from sympy import symbols, sin, latex, Eq
+from sympy import symbols, sin, latex, Eq, pi
 from util._260521_get_full_duration import _get_full_duration
 
 # 利用光谱宽度计算频谱宽度
@@ -10,7 +10,7 @@ def _dwl_to_dv(center_wavelength, wavelength_fwhm):
             2.998E8/(center_wavelength+0.5*wavelength_fwhm)
 
 # 将计算结果写入LaTeX文件，并编译成PDF
-def _latex_compressor_design(setting, dispersion):
+def _latex_comp_results(setting, dispersion):
 
     # 代入初始参数
     c_value = 2.998E8
@@ -54,7 +54,7 @@ def _latex_compressor_design(setting, dispersion):
 
     PHI, wl, gamma, Lg, d, c, w = \
         symbols('PHI, \\lambda, \\gamma, L_g, d, c, \\omega')
-    phi_expr = 2*w*Lg/c*(1-(2*np.pi*c/w/d - sin(gamma))**2)**0.5
+    phi_expr = 2*w*Lg/c*(1-(2*pi*c/w/d - sin(gamma))**2)**0.5
     PHI_eq = Eq(PHI, phi_expr)
 
     section2 = '\section{Grating parameters}'

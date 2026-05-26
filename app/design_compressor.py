@@ -26,5 +26,5 @@ full_duration = _get_full_duration(
     GVD=dispersion[3], TOD=dispersion[4], FOD=dispersion[5])
 _print_full_duration(full_duration)
 
-from util._260522_latex_compressor_design import _latex_compressor_design
-_latex_compressor_design(setting, dispersion)
+from util._260522_latex_comp_results import _latex_comp_results
+_latex_comp_results(setting, dispersion)
