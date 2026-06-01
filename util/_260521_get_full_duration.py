@@ -9,7 +9,7 @@ def _get_full_duration(
     FOD=0,
     ):
 
-    c_value = 2.9979E8
+    c_value = 3E8
 
     w0 = 2*np.pi*c_value/center_wavelength
     w_min = 2*np.pi*c_value/(center_wavelength + wavelength_fwhm)

@@ -11,7 +11,7 @@ def _get_dispersion(
     ):
 
     # 定义常数和符号变量
-    c_value = 2.998E8
+    c_value = 3E8
     wl0_value = center_wavelength
     d_value = 1/grating_line_density
     gamma_value = incident_angle/180*np.pi

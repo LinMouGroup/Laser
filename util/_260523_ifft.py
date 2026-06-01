@@ -9,16 +9,16 @@ def _1d_gaus_fwhm(x, a, b, fwhm):
 
 # 计算中心角频率
 def _get_angular_frequency(center_wavelength, wavelength_fwhm):
-    c_value = 2.9979E8
+    c_value = 3E8
     freq_center = c_value / center_wavelength
     omega_center = 2 * np.pi * freq_center
-    omega_fwhm = 2 * np.pi * (c_value / (center_wavelength - wavelength_fwhm) \
-        - c_value / (center_wavelength + wavelength_fwhm))
+    omega_fwhm = 2 * np.pi * (c_value / (center_wavelength - 0.5*wavelength_fwhm) \
+        - c_value / (center_wavelength + 0.5*wavelength_fwhm))
     return omega_center, omega_fwhm
 
 # 计算带宽
 def _get_bandwidth(center_wavelength, wavelength_fwhm):
-    c_value = 2.9979E8
+    c_value = 3E8
     freq_center = c_value / center_wavelength
     freq_min = c_value / (center_wavelength + wavelength_fwhm)
     freq_max = c_value / (center_wavelength - wavelength_fwhm)
@@ -26,7 +26,7 @@ def _get_bandwidth(center_wavelength, wavelength_fwhm):
     return bandwidth
 
 # 选择最优的采样点数N以满足IFFT的性能要求
-def _get_optimal_N(pulse_duration, bandwidth, safety_factor=5):
+def _get_optimal_N(pulse_duration, bandwidth, safety_factor=2):
 
     # 时间窗口应该足够宽以包含整个脉冲
     time_window = safety_factor * pulse_duration

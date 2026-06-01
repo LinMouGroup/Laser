@@ -9,8 +9,8 @@ def _dwl_to_dv(
     center_wavelength, 
     wavelength_fwhm,
     ):
-    return 2.998E8/(center_wavelength-0.5*wavelength_fwhm)-\
-            2.998E8/(center_wavelength+0.5*wavelength_fwhm)
+    return 3E8/(center_wavelength-0.5*wavelength_fwhm)-\
+            3E8/(center_wavelength+0.5*wavelength_fwhm)
 
 # 将计算结果写入LaTeX文件，并编译成PDF
 def _latex_comp_results(
@@ -19,7 +19,7 @@ def _latex_comp_results(
     ):
 
     # 代入初始参数
-    c_value = 2.998E8
+    c_value = 3E8
     wl0_value = setting['center_wavelength (nm)'] * 1E-9
     d_value = 1/setting['grating_line_density (mm-1)'] * 1E-3
     gamma_value = setting['incident_angle (deg)']/180*np.pi
