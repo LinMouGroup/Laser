@@ -21,9 +21,12 @@ def _get_full_duration(
     return np.abs(t_max - t_min)
 
 # 打印加入啁啾后的脉宽，默认光谱宽度为10nm
-def _print_full_duration(full_duration):
+def _print_full_duration(
+    full_duration, 
+    wavelength_fwhm=10,
+    ):
     print("")
-    print(f"Full_pulse_duration_with_10nm_FWHM: {full_duration:.2E} s")
+    print(f"Full_pulse_duration_with_{wavelength_fwhm}nm_FWHM: {full_duration:.2E} s")
 
 """
 Reference:

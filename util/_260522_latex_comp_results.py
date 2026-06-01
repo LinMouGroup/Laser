@@ -5,12 +5,18 @@ from sympy import symbols, sin, latex, Eq, pi
 from util._260521_get_full_duration import _get_full_duration
 
 # 利用光谱宽度计算频谱宽度
-def _dwl_to_dv(center_wavelength, wavelength_fwhm):
+def _dwl_to_dv(
+    center_wavelength, 
+    wavelength_fwhm,
+    ):
     return 2.998E8/(center_wavelength-0.5*wavelength_fwhm)-\
             2.998E8/(center_wavelength+0.5*wavelength_fwhm)
 
 # 将计算结果写入LaTeX文件，并编译成PDF
-def _latex_comp_results(setting, dispersion):
+def _latex_comp_results(
+    setting, 
+    dispersion,
+    ):
 
     # 代入初始参数
     c_value = 2.998E8

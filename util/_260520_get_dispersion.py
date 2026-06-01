@@ -3,14 +3,19 @@ import numpy as np
 from sympy import symbols, sin, asin, diff
 
 # 根据Kapteyn的公式计算光栅对的色散参数
-def _get_dispersion(setting):
+def _get_dispersion(
+    center_wavelength,
+    grating_line_density,
+    incident_angle,
+    grating_separation
+    ):
 
-    # 把参数转换成SI单位
+    # 定义常数和符号变量
     c_value = 2.998E8
-    wl0_value = setting['center_wavelength (nm)'] * 1E-9
-    d_value = 1/setting['grating_line_density (mm-1)'] * 1E-3
-    gamma_value = setting['incident_angle (deg)']/180*np.pi
-    Lg_value = setting['grating_separation (mm)'] * 1E-3
+    wl0_value = center_wavelength
+    d_value = 1/grating_line_density
+    gamma_value = incident_angle/180*np.pi
+    Lg_value = grating_separation
     w0_value = 2*np.pi*c_value/wl0_value
 
     # 根据光栅公式计算Littrow角和衍射角
