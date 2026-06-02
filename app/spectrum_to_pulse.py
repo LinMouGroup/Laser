@@ -6,7 +6,7 @@ Environment: numpy, scipy
 
 setting = {
 
-'spectrum_shape': 'gaus', #gaus, sech2, or fname
+'spectrum_shape': 'sech2', #gaus, sech2
 'center_wavelength (nm)': 2000,
 'wavelength_fwhm (nm)': 20,
 'GVD (s^2)': 134E-25,
@@ -29,7 +29,7 @@ full_duration = _get_full_duration(
 
 # 2. 计算频谱中心角频率、带宽、以及最优采样点数
 from util._260523_ifft import _get_angular_frequency, _get_bandwidth, \
-    _1d_gaus_fwhm, _get_optimal_N, _ifft
+    _1d_gaus_fwhm, _1d_sech2_fwhm, _get_optimal_N, _ifft
 w0, w_fwhm = _get_angular_frequency(
     center_wavelength=setting['center_wavelength (nm)']*1E-9,
     wavelength_fwhm=setting['wavelength_fwhm (nm)']*1E-9
@@ -42,7 +42,12 @@ time, w = _get_optimal_N(full_duration, bandwidth)[4:6]
 
 # 3. 构造频谱强度和相位，计算时域电场和强度
 w = w + w0
-spectrum_intensity = _1d_gaus_fwhm(w, 1, w0, w_fwhm)
+
+if setting['spectrum_shape'] == 'sech2':
+    spectrum_intensity = _1d_sech2_fwhm(w, 1, w0, w_fwhm)
+else: # 默认使用高斯光谱
+    spectrum_intensity = _1d_gaus_fwhm(w, 1, w0, w_fwhm)
+
 wavelength = np.flip(2*np.pi*3E8/w)
 
 phi_omega = setting['GVD (s^2)']*(w-w0)**2/2 + setting['TOD (s^3)']*(w-w0)**3/6 + \

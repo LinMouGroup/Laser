@@ -7,6 +7,12 @@ def _1d_gaus(x, a, b, c):
 def _1d_gaus_fwhm(x, a, b, fwhm):
     return a*np.exp(-(x-b)**2/(2*(fwhm/2.35482)**2))
 
+def _1d_sech2(x, a, b, c):
+    return a/(np.cosh((x-b)/c))**2
+
+def _1d_sech2_fwhm(x, a, b, fwhm):
+    return a/(np.cosh(1.763*(x-b)/fwhm))**2
+
 # 计算中心角频率
 def _get_angular_frequency(center_wavelength, wavelength_fwhm):
     c_value = 3E8
