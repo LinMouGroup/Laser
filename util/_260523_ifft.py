@@ -30,6 +30,8 @@ def _get_optimal_N(pulse_duration, bandwidth, safety_factor=2):
 
     # 时间窗口应该足够宽以包含整个脉冲
     time_window = safety_factor * pulse_duration
+    if time_window < 1 / bandwidth:
+        time_window = 1 / bandwidth * 10  # 确保时间窗口足够大以满足奈奎斯特采样定理
     
     # 根据带宽确定所需时间分辨率（奈奎斯特采样）
     dt_needed = 1 / (2 * bandwidth)
