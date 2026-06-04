@@ -55,6 +55,8 @@ phi_omega = setting['GVD (s^2)']*(w-w0)**2/2 + setting['TOD (s^3)']*(w-w0)**3/6 
 E_time, I_time, I_time_normalized = _ifft(spectrum_intensity, phi_omega)
 
 # 4. 绘制光谱数据和对应的时域脉冲
+from util._260524_mpl_helper import mark_pulse_fwhm, mark_spectrum_fwhm
+
 fig, axes = plt.subplots(2, 1, figsize=(10, 6), tight_layout=True)
 
 ax1 = axes[0]
@@ -63,6 +65,7 @@ ax1.set_xlabel('Wavelength (nm)')
 ax1.set_ylabel('Intensity (a.u.)')
 ax1.set_title('Input Spectrum')
 ax1.grid()
+mark_spectrum_fwhm(ax1, wavelength*1E9, np.flip(spectrum_intensity))
 
 ax1_phase = ax1.twinx()
 ax1_phase.plot(wavelength*1E9, np.flip(phi_omega), 'r--', label='Spectral Phase')
@@ -80,6 +83,7 @@ ax2.set_xlabel('Time (s)')
 ax2.set_ylabel('Intensity (a.u.)')
 ax2.set_title('Output Pulse')
 ax2.grid()
+mark_pulse_fwhm(ax2, offset_time, I_time_normalized)
 
 plt.suptitle('Spectrum to Pulse Conversion', fontsize=16)
 plt.show()
