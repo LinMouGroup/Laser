@@ -59,29 +59,33 @@ time, w = _get_optimal_N(full_duration, bandwidth)[4:6]
 w = w + w0
 
 # 4. 构造频谱强度和相位，计算时域电场和强度
-from scipy.interpolate import CubicSpline, UnivariateSpline
-from scipy.interpolate import interp1d
+from scipy.interpolate import CubicSpline, interp1d
 
-# 4.1. 根据w的长度，把光谱数据延长至w长度
-# 4.1.1. 计算原有数据的长度和w的长度只差，以及左右两边需延长的长度
 wl = wavelength
 I_wl = wavelength_intensity
 
-pad_total = len(w) - len(wl)
-pad_left = pad_total // 2
-pad_right = pad_total - pad_left
+# 4.1. 如果w的长度大于原有数据的长度，则需要对原数据进行插值延长
+if len(w) >= len(wl):
+    pad_total = len(w) - len(wl)
+    pad_left = pad_total // 2
+    pad_right = pad_total - pad_left
 
-# 4.1.2. 把原有wavelength数据两边线性插值延长
-f = interp1d(np.arange(len(wl)), wl, kind='linear', fill_value='extrapolate')
-wl_new = np.arange(-pad_left, len(wl) + pad_right)
-wl_padded = f(wl_new)
+    # 4.1.1. 把原有wavelength数据两边线性插值延长
+    f = interp1d(np.arange(len(wl)), wl, kind='linear', fill_value='extrapolate')
+    wl_new = np.arange(-pad_left, len(wl) + pad_right)
+    wl_padded = f(wl_new)
 
-# 4.1.3. 把原有wavelength_intensity数据两边加零延长
-I_wl_padded = np.pad(I_wl, (pad_left, pad_right), 'constant', constant_values=0)
+    # 4.1.2. 把原有wavelength_intensity数据两边加零延长
+    I_wl_padded = np.pad(I_wl, (pad_left, pad_right), 'constant', constant_values=0)
 
-# 4.2. 按照w的长度生成新的光谱数据
-spline = CubicSpline(np.flip(2*np.pi*3E8/(wl_padded)), np.flip(I_wl_padded), bc_type='natural')
-spectrum_intensity = spline(w)
+    # 4.1.3. 按照w的长度生成新的光谱数据
+    spline = CubicSpline(np.flip(2*np.pi*3E8/(wl_padded)), np.flip(I_wl_padded), bc_type='natural')
+    spectrum_intensity = spline(w)
+
+# 4.2. 如果w的长度小于原有数据的长度，则直接按照w的长度从原有数据中选取对应的强度值    
+else:
+    indices = np.linspace(0, len(wavelength_intensity) - 1, len(w)).astype(int)
+    spectrum_intensity = wavelength_intensity[indices]
 
 # 5. 进行傅里叶逆变换
 phi_omega = setting['GVD (s^2)']*(w-w0)**2/2 + setting['TOD (s^3)']*(w-w0)**3/6 + \
