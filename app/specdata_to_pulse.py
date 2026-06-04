@@ -19,20 +19,26 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # 1. 读取光谱数据，并计算中心波长和光谱半高宽度，打印结果
+
+# 1.1. 读取光谱数据，并把波长单位从nm转换为m，把强度归一化到0-1范围
 specdata = pd.read_excel(setting['fname'])
-wavelength = specdata['wavelength (nm)'].values
+wavelength = specdata['wavelength (nm)'].values * 1E-9
 wavelength_intensity = specdata['intensity (a.u.)'].values
+wavelength_intensity = (wavelength_intensity - wavelength_intensity.min()) \
+    / (wavelength_intensity.max() - wavelength_intensity.min())
+
+# 1.2. 计算中心波长和光谱半高宽度
 center_wavelength = np.sum(wavelength*wavelength_intensity)/np.sum(wavelength_intensity)
 wavelength_fwhm = wavelength[np.where(wavelength_intensity >= np.max(wavelength_intensity)/2)[0][-1]] \
     - wavelength[np.where(wavelength_intensity >= np.max(wavelength_intensity)/2)[0][0]]
-print(f"Center wavelength: {center_wavelength:.2f} nm")
-print(f"Wavelength FWHM: {wavelength_fwhm:.2f} nm")
+print(f"Center wavelength: {center_wavelength*1E9:.2f} nm")
+print(f"Wavelength FWHM: {wavelength_fwhm*1E9:.2f} nm")
 
 # 2. 根据色散参数计算展宽后的脉宽全宽，打印结果
 from util._260521_get_full_duration import _get_full_duration, _print_full_duration
 full_duration = _get_full_duration(
-    center_wavelength=center_wavelength*1E-9,
-    wavelength_fwhm=wavelength_fwhm*1E-9,
+    center_wavelength=center_wavelength,
+    wavelength_fwhm=wavelength_fwhm,
     GVD=setting['GVD (s^2)'], TOD=setting['TOD (s^3)'], FOD=setting['FOD (s^4)']
     )
 
@@ -42,12 +48,12 @@ _print_full_duration(full_duration, wavelength_fwhm)
 from util._260523_ifft import _get_angular_frequency, _get_bandwidth, \
     _1d_gaus_fwhm, _1d_sech2_fwhm, _get_optimal_N, _ifft
 w0, w_fwhm = _get_angular_frequency(
-    center_wavelength=center_wavelength*1E-9,
-    wavelength_fwhm=wavelength_fwhm*1E-9
+    center_wavelength=center_wavelength,
+    wavelength_fwhm=wavelength_fwhm
     )
 bandwidth = _get_bandwidth(
-    center_wavelength=center_wavelength*1E-9,
-    wavelength_fwhm=wavelength_fwhm*1E-9
+    center_wavelength=center_wavelength,
+    wavelength_fwhm=wavelength_fwhm
     )
 time, w = _get_optimal_N(full_duration, bandwidth)[4:6]
 w = w + w0
@@ -74,7 +80,7 @@ wl_padded = f(wl_new)
 I_wl_padded = np.pad(I_wl, (pad_left, pad_right), 'constant', constant_values=0)
 
 # 4.2. 按照w的长度生成新的光谱数据
-spline = CubicSpline(np.flip(2*np.pi*3E8/(wl_padded*1E-9)), np.flip(I_wl_padded), bc_type='natural')
+spline = CubicSpline(np.flip(2*np.pi*3E8/(wl_padded)), np.flip(I_wl_padded), bc_type='natural')
 spectrum_intensity = spline(w)
 
 # 5. 进行傅里叶逆变换
