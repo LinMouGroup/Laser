@@ -42,7 +42,7 @@ def _latex_comp_results(
 
     # 生成LaTeX文件并编译成PDF
     fname = str(datetime.now().strftime("%Y%m%d%H%M%S")) + '_comp_results'
-    output_root=os.path.join('data', fname)
+    output_root=os.path.join('zoutput', fname)
     tex_file = open(output_root + '.tex', 'w')
 
     document_beginings = r"""
@@ -159,7 +159,7 @@ def _latex_comp_results(
     # 编译LaTeX文件成PDF，并删除中间文件
     # 注意：>nul 2>&1 是为了在Windows系统上隐藏编译过程中的输出，不适配Linux系统和MacOS系统
     os.system('pdflatex -interaction=batchmode -output-directory=' + \
-        'data\\' + ' ' + os.path.split(output_root)[1] + '.tex > nul 2>&1')
+        'zoutput\\' + ' ' + os.path.split(output_root)[1] + '.tex > nul 2>&1')
     os.remove(output_root + '.log')
     os.remove(output_root + '.aux')
     os.remove(output_root + '.tex')
