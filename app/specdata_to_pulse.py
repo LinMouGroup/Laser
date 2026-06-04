@@ -18,18 +18,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# 1. 读取光谱数据，并计算中心波长和光谱半高宽度，打印结果
 specdata = pd.read_excel(setting['fname'])
 wavelength = specdata['wavelength (nm)'].values
 wavelength_intensity = specdata['intensity (a.u.)'].values
 center_wavelength = np.sum(wavelength*wavelength_intensity)/np.sum(wavelength_intensity)
 wavelength_fwhm = wavelength[np.where(wavelength_intensity >= np.max(wavelength_intensity)/2)[0][-1]] \
     - wavelength[np.where(wavelength_intensity >= np.max(wavelength_intensity)/2)[0][0]]
-
 print(f"Center wavelength: {center_wavelength:.2f} nm")
 print(f"Wavelength FWHM: {wavelength_fwhm:.2f} nm")
 
-
-# 1. 根据色散参数计算展宽后的脉宽全宽
+# 2. 根据色散参数计算展宽后的脉宽全宽，打印结果
 from util._260521_get_full_duration import _get_full_duration, _print_full_duration
 full_duration = _get_full_duration(
     center_wavelength=center_wavelength*1E-9,
@@ -39,7 +38,7 @@ full_duration = _get_full_duration(
 
 _print_full_duration(full_duration, wavelength_fwhm)
 
-# 2. 计算频谱中心角频率、带宽、以及最优采样点数
+# 3. 计算频谱中心角频率、带宽、以及最优采样点数
 from util._260523_ifft import _get_angular_frequency, _get_bandwidth, \
     _1d_gaus_fwhm, _1d_sech2_fwhm, _get_optimal_N, _ifft
 w0, w_fwhm = _get_angular_frequency(
@@ -51,13 +50,14 @@ bandwidth = _get_bandwidth(
     wavelength_fwhm=wavelength_fwhm*1E-9
     )
 time, w = _get_optimal_N(full_duration, bandwidth)[4:6]
+w = w + w0
 
-# 3. 构造频谱强度和相位，计算时域电场和强度
+# 4. 构造频谱强度和相位，计算时域电场和强度
 from scipy.interpolate import CubicSpline, UnivariateSpline
 from scipy.interpolate import interp1d
 
-w = w + w0
-
+# 4.1. 根据w的长度，把光谱数据延长至w长度
+# 4.1.1. 计算原有数据的长度和w的长度只差，以及左右两边需延长的长度
 wl = wavelength
 I_wl = wavelength_intensity
 
@@ -65,34 +65,35 @@ pad_total = len(w) - len(wl)
 pad_left = pad_total // 2
 pad_right = pad_total - pad_left
 
-
+# 4.1.2. 把原有wavelength数据两边线性插值延长
 f = interp1d(np.arange(len(wl)), wl, kind='linear', fill_value='extrapolate')
-x_new = np.arange(-pad_left, len(wl) + pad_right)
-wl_padded = f(x_new)
+wl_new = np.arange(-pad_left, len(wl) + pad_right)
+wl_padded = f(wl_new)
 
+# 4.1.3. 把原有wavelength_intensity数据两边加零延长
 I_wl_padded = np.pad(I_wl, (pad_left, pad_right), 'constant', constant_values=0)
 
+# 4.2. 按照w的长度生成新的光谱数据
 spline = CubicSpline(np.flip(2*np.pi*3E8/(wl_padded*1E-9)), np.flip(I_wl_padded), bc_type='natural')
 spectrum_intensity = spline(w)
 
-wavelength = np.flip(2*np.pi*3E8/w)
-
+# 5. 进行傅里叶逆变换
 phi_omega = setting['GVD (s^2)']*(w-w0)**2/2 + setting['TOD (s^3)']*(w-w0)**3/6 + \
     setting['FOD (s^4)']*(w-w0)**4/24
 E_time, I_time, I_time_normalized = _ifft(spectrum_intensity, phi_omega)
 
-# 4. 绘制光谱数据和对应的时域脉冲
+# 6. 绘制光谱数据和对应的时域脉冲
 fig, axes = plt.subplots(2, 1, figsize=(10, 6), tight_layout=True)
 
 ax1 = axes[0]
-ax1.plot(wavelength*1E9, np.flip(spectrum_intensity), 'b', label='Spectrum Intensity')
+ax1.plot(np.flip(2*np.pi*3E8/w)*1E9, np.flip(spectrum_intensity), 'b', label='Spectrum Intensity')
 ax1.set_xlabel('Wavelength (nm)')
 ax1.set_ylabel('Intensity (a.u.)')
 ax1.set_title('Input Spectrum')
 ax1.grid()
 
 ax1_phase = ax1.twinx()
-ax1_phase.plot(wavelength*1E9, np.flip(phi_omega), 'r--', label='Spectral Phase')
+ax1_phase.plot(np.flip(2*np.pi*3E8/w)*1E9, np.flip(phi_omega), 'r--', label='Spectral Phase')
 ax1_phase.set_ylabel('Phase (rad)', color='r')
 ax1_phase.tick_params(axis='y', color='r')
 

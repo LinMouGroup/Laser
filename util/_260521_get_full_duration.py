@@ -26,7 +26,7 @@ def _print_full_duration(
     wavelength_fwhm=10,
     ):
     print("")
-    print(f"Full_pulse_duration_with_{wavelength_fwhm}nm_FWHM: {full_duration:.2E} s")
+    print(f"Full_pulse_duration_with_{wavelength_fwhm:.2f}nm_FWHM: {full_duration:.2E} s")
 
 """
 Reference:
