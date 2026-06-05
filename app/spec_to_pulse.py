@@ -6,7 +6,7 @@ Environment: numpy, scipy, matplotlib
 
 setting = {
 
-'spectrum_shape': 'sech2', #gaus, sech2
+'spectrum_shape': 'gaus', #gaus, sech2
 'center_wavelength (nm)': 2000,
 'wavelength_fwhm (nm)': 20,
 'GVD (s^2)': 134E-25,
@@ -55,7 +55,7 @@ phi_omega = setting['GVD (s^2)']*(w-w0)**2/2 + setting['TOD (s^3)']*(w-w0)**3/6 
 E_time, I_time, I_time_normalized = _ifft(spectrum_intensity, phi_omega)
 
 # 4. 绘制光谱数据和对应的时域脉冲
-from util._260524_mpl_helper import mark_pulse_fwhm, mark_spectrum_fwhm
+from util._260524_mpl import mark_pulse_fwhm, mark_spectrum_fwhm
 
 fig, axes = plt.subplots(2, 1, figsize=(10, 6), tight_layout=True)
 
