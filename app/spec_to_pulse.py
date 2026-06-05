@@ -86,4 +86,6 @@ ax2.grid()
 mark_pulse_fwhm(ax2, offset_time, I_time_normalized)
 
 plt.suptitle('Spectrum to Pulse Conversion', fontsize=16)
+print("")
+print("Results as shown in matplotlib figure.")
 plt.show()
