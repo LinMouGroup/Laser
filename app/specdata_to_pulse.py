@@ -22,8 +22,8 @@ import pandas as pd
 
 # 1.1. 读取光谱数据，并把波长单位从nm转换为m，把强度归一化到0-1范围
 specdata = pd.read_excel(setting['fname'])
-wavelength = specdata['wavelength (nm)'].values * 1E-9
-wavelength_intensity = specdata['intensity (a.u.)'].values
+wavelength = specdata.iloc[:, 0].values * 1E-9
+wavelength_intensity = specdata.iloc[:, 1].values
 wavelength_intensity = (wavelength_intensity - wavelength_intensity.min()) \
     / (wavelength_intensity.max() - wavelength_intensity.min())
 
